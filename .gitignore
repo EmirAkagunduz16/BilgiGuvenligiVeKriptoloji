@@ -1,0 +1,59 @@
+# Node modules ve paket yöneticisi
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build çıktıları
+dist/
+build/
+*.tsbuildinfo
+
+# Vite
+.vite/
+
+# Ortam değişkenleri
+.env
+.env.local
+.env.*.local
+
+# IDE ve editor dosyaları
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+npm-error.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+logs/
+*.log
+
+# OS dosyaları
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Yerel ayarlar
+.vscode-settings.json
+.env.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Backup dosyaları
+**/*.backup.*
+**/*.back.*
