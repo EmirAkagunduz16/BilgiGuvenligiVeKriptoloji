@@ -1,1 +1,1 @@
-# BilgiGuvenligiVeKriptoloji
+# BilgiGuvenligiVeKriptol

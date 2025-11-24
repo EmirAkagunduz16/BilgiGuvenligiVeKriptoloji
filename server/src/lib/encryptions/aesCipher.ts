@@ -1,0 +1,1 @@
+export const aesCipher = (message: string, key: string) => {};
