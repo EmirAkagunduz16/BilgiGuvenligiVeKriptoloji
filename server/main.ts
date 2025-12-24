@@ -4,7 +4,13 @@ import { WebSocketServer } from "ws";
 import http from "http";
 import encryptRoute from "./src/routes/encrypt.route";
 import decryptRoute from "./src/routes/decrypt.route";
-import { encryptMessage, decryptMessage } from "./src/controller/cipherController";
+import {
+  encryptMessage,
+  decryptMessage,
+  getRSAPublicKey,
+  hybridEncryptMessage,
+  hybridDecryptMessage,
+} from "./src/controller/cipherController";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -32,11 +38,15 @@ wss.on("connection", (ws) => {
     try {
       const message = JSON.parse(data.toString());
 
+      // Standart şifreleme (kullanıcı anahtarı ile)
       if (message.type === "encrypt") {
+        // useLibrary: true = kütüphane, false = manuel (varsayılan: true)
+        const useLibrary = message.useLibrary !== false;
         const result = await encryptMessage(
           message.method,
           message.message,
-          message.key
+          message.key,
+          useLibrary
         );
         
         ws.send(
@@ -45,16 +55,55 @@ wss.on("connection", (ws) => {
             data: result,
           })
         );
-      } else if (message.type === "decrypt") {
+      } 
+      // Standart deşifreleme
+      else if (message.type === "decrypt") {
+        const useLibrary = message.useLibrary !== false;
         const result = await decryptMessage(
           message.method,
           message.message,
-          message.key
+          message.key,
+          useLibrary
         );
         
         ws.send(
           JSON.stringify({
             type: "decrypted",
+            data: result,
+          })
+        );
+      }
+      // RSA public key isteği
+      else if (message.type === "get_rsa_public_key") {
+        const result = getRSAPublicKey();
+        ws.send(
+          JSON.stringify({
+            type: "rsa_public_key",
+            data: result,
+          })
+        );
+      }
+      // Hibrit şifreleme (RSA + AES/DES)
+      else if (message.type === "hybrid_encrypt") {
+        const algorithm = message.algorithm || "aes";
+        const result = await hybridEncryptMessage(message.message, algorithm);
+        ws.send(
+          JSON.stringify({
+            type: "hybrid_encrypted",
+            data: result,
+          })
+        );
+      }
+      // Hibrit deşifreleme
+      else if (message.type === "hybrid_decrypt") {
+        const result = await hybridDecryptMessage({
+          encryptedKey: message.encryptedKey,
+          encryptedMessage: message.encryptedMessage,
+          algorithm: message.algorithm,
+        });
+        ws.send(
+          JSON.stringify({
+            type: "hybrid_decrypted",
             data: result,
           })
         );

@@ -1,7 +1,23 @@
-import { aesCipher } from "../lib/encryptions/aesCipher";
+import {
+  aesEncrypt,
+  aesDecrypt,
+  aesEncryptManual,
+  aesDecryptManual,
+} from "../lib/encryptions/aes";
+import {
+  desEncrypt,
+  desDecrypt,
+  desEncryptManual,
+  desDecryptManual,
+} from "../lib/encryptions/des";
+import {
+  getServerPublicKey,
+  serverHybridEncrypt,
+  serverHybridDecrypt,
+  type HybridEncryptionResult,
+} from "../lib/encryptions/rsa";
 import { caeserCipher, caeserDecipher } from "../lib/encryptions/caeserCipher";
 import { columnarCipher, columnarDecipher } from "../lib/encryptions/columnarCipher";
-import { desCipher } from "../lib/encryptions/desCipher";
 import { hillCipher, hillDecipher } from "../lib/encryptions/hillCipher";
 import { pigpenCipher, pigpenDecipher } from "../lib/encryptions/pigpenCipher";
 import { playfairCipher, playfairDecipher } from "../lib/encryptions/playfairCipher";
@@ -11,10 +27,18 @@ import { routeCipher, routeDecipher } from "../lib/encryptions/routeCipher";
 import { substitutionCipher, substitutionDecipher } from "../lib/encryptions/substitutionCipher";
 import { vigenereCipher, vigenereDecipher } from "../lib/encryptions/vigenereCipher";
 
+/**
+ * Şifreleme controller'ı
+ * @param method - Şifreleme metodu
+ * @param message - Şifrelenecek mesaj
+ * @param key - Anahtar
+ * @param useLibrary - true: kütüphane, false: manuel (sadece AES/DES için)
+ */
 export const encryptController = async (
   method: string,
   message: string,
-  key: string | number | null
+  key: string | number | null,
+  useLibrary: boolean = true
 ) => {
   if (!key || key === null || key === undefined) {
     throw new Error("Key is required");
@@ -43,9 +67,14 @@ export const encryptController = async (
       case "vigenere":
         return vigenereCipher(message, String(key));
       case "aes":
-        return aesCipher(message, String(key));
+        // useLibrary parametresine göre kütüphane veya manuel kullan
+        return useLibrary 
+          ? aesEncrypt(message, String(key))
+          : aesEncryptManual(message, String(key));
       case "des":
-        return desCipher(message, String(key));
+        return useLibrary 
+          ? desEncrypt(message, String(key))
+          : desEncryptManual(message, String(key));
       default:
         throw new Error("Invalid method");
     }
@@ -54,10 +83,18 @@ export const encryptController = async (
   }
 };
 
+/**
+ * Deşifreleme controller'ı
+ * @param method - Şifreleme metodu
+ * @param message - Şifreli mesaj
+ * @param key - Anahtar
+ * @param useLibrary - true: kütüphane, false: manuel (sadece AES/DES için)
+ */
 export const decryptController = async (
   method: string,
   message: string,
-  key: string | number | null
+  key: string | number | null,
+  useLibrary: boolean = true
 ) => {
   if (!key || key === null || key === undefined) {
     throw new Error("Key is required");
@@ -86,9 +123,13 @@ export const decryptController = async (
       case "vigenere":
         return vigenereDecipher(message, String(key));
       case "aes":
-        return aesCipher(message, String(key)); // AES kendi decrypt'ini içeriyor olabilir
+        return useLibrary 
+          ? aesDecrypt(message, String(key))
+          : aesDecryptManual(message, String(key));
       case "des":
-        return desCipher(message, String(key)); // DES kendi decrypt'ini içeriyor olabilir
+        return useLibrary 
+          ? desDecrypt(message, String(key))
+          : desDecryptManual(message, String(key));
       default:
         throw new Error("Invalid method");
     }
@@ -100,17 +141,60 @@ export const decryptController = async (
 export const encryptMessage = async (
   method: string,
   message: string,
-  key: string | number
+  key: string | number,
+  useLibrary: boolean = true
 ) => {
-  const encryptedMessage = await encryptController(method, message, key);
-  return { encryptedMessage };
+  const encryptedMessage = await encryptController(method, message, key, useLibrary);
+  return { encryptedMessage, useLibrary };
 };
 
 export const decryptMessage = async (
   method: string,
   message: string,
-  key: string | number
+  key: string | number,
+  useLibrary: boolean = true
 ) => {
-  const decryptedMessage = await decryptController(method, message, key);
+  const decryptedMessage = await decryptController(method, message, key, useLibrary);
   return { decryptedMessage };
+};
+
+// ==========================================
+// RSA HİBRİT ŞİFRELEME FONKSİYONLARI
+// ==========================================
+
+/**
+ * Sunucunun RSA public key'ini döndür
+ */
+export const getRSAPublicKey = () => {
+  return { publicKey: getServerPublicKey() };
+};
+
+/**
+ * Hibrit şifreleme (RSA + AES/DES)
+ * - RSA ile simetrik anahtar şifrelenir
+ * - AES/DES ile mesaj şifrelenir
+ */
+export const hybridEncryptMessage = async (
+  message: string,
+  algorithm: "aes" | "des" = "aes"
+): Promise<HybridEncryptionResult> => {
+  try {
+    return serverHybridEncrypt(message, algorithm);
+  } catch (error) {
+    throw new Error("Error in hybrid encryption");
+  }
+};
+
+/**
+ * Hibrit deşifreleme (RSA + AES/DES)
+ */
+export const hybridDecryptMessage = async (
+  encryptedData: HybridEncryptionResult
+): Promise<{ decryptedMessage: string }> => {
+  try {
+    const decryptedMessage = serverHybridDecrypt(encryptedData);
+    return { decryptedMessage };
+  } catch (error) {
+    throw new Error("Error in hybrid decryption");
+  }
 };
