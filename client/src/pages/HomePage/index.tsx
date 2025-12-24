@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { encryptApi, decryptApi } from "../../lib/api";
+import { useState, useEffect } from "react";
+import { useWebSocket } from "../../hooks/useWebSocket";
 import type { EncryptionMethod } from "../../types/encryption";
 
 type Mode = "sender" | "receiver";
@@ -12,10 +12,29 @@ const Home = () => {
   const [key, setKey] = useState("");
   const [encryptedMessage, setEncryptedMessage] = useState("");
   const [decryptedMessage, setDecryptedMessage] = useState("");
+  // WebSocket bağlantısı
+  const { isConnected, sendMessage, lastMessage } = useWebSocket(
+    "ws://localhost:3000"
+  );
+
+  // WebSocket mesajlarını dinle
+  useEffect(() => {
+    if (lastMessage) {
+      if (lastMessage.type === "encrypted") {
+        setEncryptedMessage(lastMessage.data?.encryptedMessage || "");
+        setDecryptedMessage("");
+        setMode("receiver");
+      } else if (lastMessage.type === "decrypted") {
+        setDecryptedMessage(lastMessage.data?.decryptedMessage || "");
+      } else f (lastMessage.type === "error") {
+        alert(lastMessage.message || "Bir hata oluştu");
+      }
+    }
+  }, [lastMessage]);
   // Tüm metodlar dropdown'da
   const allMethods = [
     { id: "substitution" as EncryptionMethod, name: "Substitution Cipher" },
-    { id: "railfence" as EncryptionMethod, name: "Raylı Çit Şifresi" },
+    { id: "railfence" as EncryptionMethod, name: "Rail Fence Cipher" },
     { id: "playfair" as EncryptionMethod, name: "Playfair Cipher" },
     { id: "route" as EncryptionMethod, name: "Route Cipher" },
     { id: "columnar" as EncryptionMethod, name: "Columnar Transposition" },
@@ -61,41 +80,44 @@ const Home = () => {
     return "text";
   };
 
-  const handleEncrypt = async () => {
-    try {
-      const result = await encryptApi(
-        selectedMethod as EncryptionMethod,
-        message,
-        key as string
-      );
-      setEncryptedMessage(result.encryptedMessage);
-      setDecryptedMessage(""); // Önceki decrypt sonucunu temizle
-      setMode("receiver");
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("Şifreleme hatası");
-      }
+  const handleEncrypt = () => {
+    if (!isConnected) {
+      alert("WebSocket bağlantısı kurulamadı. Lütfen sunucunun çalıştığından emin olun.");
+      return;
     }
+
+    if (!message || !key) {
+      alert("Lütfen mesaj ve anahtar giriniz");
+      return;
+    }
+
+    // WebSocket üzerinden şifreleme isteği gönder
+    sendMessage({
+      type: "encrypt",
+      method: selectedMethod.toLowerCase(),
+      message,
+      key,
+    });
   };
 
-  const handleDecrypt = async () => {
-    try {
-      const result = await decryptApi(
-        selectedMethod as EncryptionMethod,
-        encryptedMessage,
-        key as string
-      );
-      setDecryptedMessage(result.decryptedMessage);
-      // Alıcı tarafında kalmaya devam et
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("Deşifreleme hatası");
-      }
+  const handleDecrypt = () => {
+    if (!isConnected) {
+      alert("WebSocket bağlantısı kurulamadı. Lütfen sunucunun çalıştığından emin olun.");
+      return;
     }
+
+    if (!encryptedMessage || !key) {
+      alert("Lütfen şifreli mesaj ve anahtar giriniz");
+      return;
+    }
+
+    // WebSocket üzerinden deşifreleme isteği gönder
+    sendMessage({
+      type: "decrypt",
+      method: selectedMethod.toLowerCase(),
+      message: encryptedMessage,
+      key,
+    });
   };
 
   return (
@@ -106,6 +128,22 @@ const Home = () => {
           <h1 className="text-slate-100 text-2xl font-light mb-6">
             İstemci-Sunucu Şifreleme Uygulaması
           </h1>
+
+          {/* WebSocket Bağlantı Durumu */}
+          <div className="mb-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-700/60 border border-slate-600/50">
+            <div
+              className={`w-3 h-3 rounded-full ${
+                isConnected
+                  ? "bg-green-500 shadow-lg shadow-green-500/50 animate-pulse"
+                  : "bg-red-500 shadow-lg shadow-red-500/50"
+              }`}
+            />
+            <span className="text-slate-200 text-sm font-medium">
+              {isConnected
+                ? "🔌 WebSocket Bağlı"
+                : "⚠️ WebSocket Bağlantısı Yok"}
+            </span>
+          </div>
 
           {/* Mode Tabs */}
           <div className="flex justify-center gap-4 mb-8">

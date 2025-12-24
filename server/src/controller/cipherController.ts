@@ -96,3 +96,21 @@ export const decryptController = async (
     throw new Error("Error decrypting message");
   }
 };
+
+export const encryptMessage = async (
+  method: string,
+  message: string,
+  key: string | number
+) => {
+  const encryptedMessage = await encryptController(method, message, key);
+  return { encryptedMessage };
+};
+
+export const decryptMessage = async (
+  method: string,
+  message: string,
+  key: string | number
+) => {
+  const decryptedMessage = await decryptController(method, message, key);
+  return { decryptedMessage };
+};
