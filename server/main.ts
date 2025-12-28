@@ -31,16 +31,13 @@ app.use(
 app.use("/api", encryptRoute);
 app.use("/api", decryptRoute);
 
-// WebSocket bağlantısı yönetimi
 wss.on("connection", (ws) => {
 
   ws.on("message", async (data) => {
     try {
       const message = JSON.parse(data.toString());
 
-      // Standart şifreleme (kullanıcı anahtarı ile)
       if (message.type === "encrypt") {
-        // useLibrary: true = kütüphane, false = manuel (varsayılan: true)
         const useLibrary = message.useLibrary !== false;
         const result = await encryptMessage(
           message.method,
@@ -56,7 +53,6 @@ wss.on("connection", (ws) => {
           })
         );
       } 
-      // Standart deşifreleme
       else if (message.type === "decrypt") {
         const useLibrary = message.useLibrary !== false;
         const result = await decryptMessage(
@@ -73,7 +69,6 @@ wss.on("connection", (ws) => {
           })
         );
       }
-      // RSA public key isteği
       else if (message.type === "get_rsa_public_key") {
         const result = getRSAPublicKey();
         ws.send(
@@ -83,7 +78,6 @@ wss.on("connection", (ws) => {
           })
         );
       }
-      // Hibrit şifreleme (RSA + AES/DES)
       else if (message.type === "hybrid_encrypt") {
         const algorithm = message.algorithm || "aes";
         const result = await hybridEncryptMessage(message.message, algorithm);
@@ -94,7 +88,6 @@ wss.on("connection", (ws) => {
           })
         );
       }
-      // Hibrit deşifreleme
       else if (message.type === "hybrid_decrypt") {
         const result = await hybridDecryptMessage({
           encryptedKey: message.encryptedKey,

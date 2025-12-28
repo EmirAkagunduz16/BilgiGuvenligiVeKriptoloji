@@ -3,9 +3,8 @@ export const railfenceCipher = (message: string, key: number): string => {
 
   const rails: string[][] = Array.from({ length: key }, () => []);
   let rail = 0;
-  let direction = 1; // 1: aşağı, -1: yukarı
+  let direction = 1;
 
-  // Mesajı raylara dağıt
   for (const char of message) {
     rails[rail].push(char);
     rail += direction;
@@ -15,7 +14,6 @@ export const railfenceCipher = (message: string, key: number): string => {
     }
   }
 
-  // Rayları birleştir
   return rails.flat().join("");
 };
 
@@ -27,12 +25,11 @@ export const railfenceDecipher = (message: string, key: number): string => {
     Array(length).fill(null)
   );
 
-  // Zig-zag pattern'ini belirle
   let rail = 0;
   let direction = 1;
 
   for (let i = 0; i < length; i++) {
-    rails[rail][i] = "*"; // İşaretleyici
+    rails[rail][i] = "*";
     rail += direction;
 
     if (rail === 0 || rail === key - 1) {
@@ -40,7 +37,6 @@ export const railfenceDecipher = (message: string, key: number): string => {
     }
   }
 
-  // Şifreli metni raylara yerleştir
   let index = 0;
   for (let r = 0; r < key; r++) {
     for (let c = 0; c < length; c++) {
@@ -50,7 +46,6 @@ export const railfenceDecipher = (message: string, key: number): string => {
     }
   }
 
-  // Zig-zag pattern'ini takip ederek mesajı oku
   let result = "";
   rail = 0;
   direction = 1;

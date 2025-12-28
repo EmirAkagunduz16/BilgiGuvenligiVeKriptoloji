@@ -27,13 +27,7 @@ import { routeCipher, routeDecipher } from "../lib/encryptions/routeCipher";
 import { substitutionCipher, substitutionDecipher } from "../lib/encryptions/substitutionCipher";
 import { vigenereCipher, vigenereDecipher } from "../lib/encryptions/vigenereCipher";
 
-/**
- * Şifreleme controller'ı
- * @param method - Şifreleme metodu
- * @param message - Şifrelenecek mesaj
- * @param key - Anahtar
- * @param useLibrary - true: kütüphane, false: manuel (sadece AES/DES için)
- */
+
 export const encryptController = async (
   method: string,
   message: string,
@@ -67,7 +61,6 @@ export const encryptController = async (
       case "vigenere":
         return vigenereCipher(message, String(key));
       case "aes":
-        // useLibrary parametresine göre kütüphane veya manuel kullan
         return useLibrary 
           ? aesEncrypt(message, String(key))
           : aesEncryptManual(message, String(key));
@@ -83,13 +76,6 @@ export const encryptController = async (
   }
 };
 
-/**
- * Deşifreleme controller'ı
- * @param method - Şifreleme metodu
- * @param message - Şifreli mesaj
- * @param key - Anahtar
- * @param useLibrary - true: kütüphane, false: manuel (sadece AES/DES için)
- */
 export const decryptController = async (
   method: string,
   message: string,
@@ -158,22 +144,10 @@ export const decryptMessage = async (
   return { decryptedMessage };
 };
 
-// ==========================================
-// RSA HİBRİT ŞİFRELEME FONKSİYONLARI
-// ==========================================
-
-/**
- * Sunucunun RSA public key'ini döndür
- */
 export const getRSAPublicKey = () => {
   return { publicKey: getServerPublicKey() };
 };
 
-/**
- * Hibrit şifreleme (RSA + AES/DES)
- * - RSA ile simetrik anahtar şifrelenir
- * - AES/DES ile mesaj şifrelenir
- */
 export const hybridEncryptMessage = async (
   message: string,
   algorithm: "aes" | "des" = "aes"
@@ -185,9 +159,7 @@ export const hybridEncryptMessage = async (
   }
 };
 
-/**
- * Hibrit deşifreleme (RSA + AES/DES)
- */
+
 export const hybridDecryptMessage = async (
   encryptedData: HybridEncryptionResult
 ): Promise<{ decryptedMessage: string }> => {

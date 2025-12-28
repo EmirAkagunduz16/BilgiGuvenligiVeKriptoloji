@@ -1,4 +1,3 @@
-// Türkçe karakterleri İngilizce karşılıklarına çevir
 const normalizeChar = (char: string): string => {
   const turkishChars = "çÇğĞıİöÖşŞüÜ";
   const englishChars = "cCgGiIoOsSuU";
@@ -6,7 +5,6 @@ const normalizeChar = (char: string): string => {
   return index !== -1 ? englishChars[index] : char;
 };
 
-// Pigpen cipher symbol mapping (basitleştirilmiş)
 const pigpenMap: { [key: string]: string } = {
   A: "⌈",
   B: "⌉",
@@ -46,7 +44,7 @@ export const pigpenCipher = (message: string, key: string): string => {
     if (pigpenMap[char]) {
       result += pigpenMap[char];
     } else {
-      result += char; // Boşluk veya özel karakter
+      result += char;
     }
   }
 
@@ -54,7 +52,6 @@ export const pigpenCipher = (message: string, key: string): string => {
 };
 
 export const pigpenDecipher = (message: string, key: string): string => {
-  // Ters mapping oluştur
   const reversePigpenMap: { [key: string]: string } = {};
   for (const [letter, symbol] of Object.entries(pigpenMap)) {
     reversePigpenMap[symbol] = letter;

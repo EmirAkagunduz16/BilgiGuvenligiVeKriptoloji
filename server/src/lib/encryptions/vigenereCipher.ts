@@ -1,6 +1,5 @@
 import { lowercaseAlphabet, uppercaseAlphabet } from "../constants/alphabet";
 
-// Türkçe karakterleri İngilizce karşılıklarına çevir
 const normalizeChar = (char: string): string => {
   const turkishChars = "çÇğĞıİöÖşŞüÜ";
   const englishChars = "cCgGiIoOsSuU";
@@ -11,7 +10,6 @@ const normalizeChar = (char: string): string => {
 export const vigenereCipher = (message: string, key: string): string => {
   if (!key) throw new Error("Key is required for Vigenere cipher");
 
-  // Key'den sadece harfleri al
   const cleanKey = key
     .split("")
     .filter((c) => /[a-zA-Z]/.test(c))
@@ -55,7 +53,6 @@ export const vigenereCipher = (message: string, key: string): string => {
 export const vigenereDecipher = (message: string, key: string): string => {
   if (!key) throw new Error("Key is required for Vigenere cipher");
 
-  // Key'den sadece harfleri al
   const cleanKey = key
     .split("")
     .filter((c) => /[a-zA-Z]/.test(c))

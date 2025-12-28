@@ -1,6 +1,5 @@
 import { lowercaseAlphabet, uppercaseAlphabet } from "../constants/alphabet";
 
-// Türkçe karakterleri İngilizce karşılıklarına çevir
 const normalizeChar = (char: string): string => {
   const turkishChars = "çÇğĞıİöÖşŞüÜ";
   const englishChars = "cCgGiIoOsSuU";
@@ -9,7 +8,6 @@ const normalizeChar = (char: string): string => {
 };
 
 export const substitutionCipher = (message: string, key: string): string => {
-  // Key alfabenin karışık hali olmalı (26 karakter)
   if (key.length !== 26) {
     throw new Error("Substitution key must be 26 characters long");
   }
@@ -37,7 +35,6 @@ export const substitutionCipher = (message: string, key: string): string => {
 };
 
 export const substitutionDecipher = (message: string, key: string): string => {
-  // Deşifreleme için ters eşleşme yap
   if (key.length !== 26) {
     throw new Error("Substitution key must be 26 characters long");
   }

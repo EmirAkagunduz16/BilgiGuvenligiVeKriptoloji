@@ -1,4 +1,3 @@
-// Türkçe karakterleri İngilizce karşılıklarına çevir
 const normalizeChar = (char: string): string => {
   const turkishChars = "çÇğĞıİöÖşŞüÜ";
   const englishChars = "cCgGiIoOsSuU";
@@ -7,7 +6,7 @@ const normalizeChar = (char: string): string => {
 };
 
 const generatePlayfairMatrix = (key: string): string[][] => {
-  const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"; // J yok, I/J aynı
+  const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
   const keyUpper = key
     .toUpperCase()
     .split("")
@@ -18,7 +17,6 @@ const generatePlayfairMatrix = (key: string): string[][] => {
   const used = new Set<string>();
   let matrixStr = "";
 
-  // Önce key karakterlerini ekle
   for (const char of keyUpper) {
     if (!used.has(char)) {
       matrixStr += char;
@@ -26,7 +24,6 @@ const generatePlayfairMatrix = (key: string): string[][] => {
     }
   }
 
-  // Sonra alfabenin kalanını ekle
   for (const char of alphabet) {
     if (!used.has(char)) {
       matrixStr += char;
@@ -34,7 +31,6 @@ const generatePlayfairMatrix = (key: string): string[][] => {
     }
   }
 
-  // 5x5 matris oluştur
   const matrix: string[][] = [];
   for (let i = 0; i < 5; i++) {
     matrix.push(matrixStr.slice(i * 5, (i + 1) * 5).split(""));
@@ -63,7 +59,6 @@ const prepareText = (text: string): string => {
     .join("")
     .replace(/J/g, "I");
 
-  // Çift harfleri ayır ve X ekle
   let result = "";
   for (let i = 0; i < prepared.length; i++) {
     result += prepared[i];
@@ -72,7 +67,6 @@ const prepareText = (text: string): string => {
     }
   }
 
-  // Tek sayıda harf varsa son X ekle
   if (result.length % 2 !== 0) {
     result += "X";
   }
@@ -93,15 +87,12 @@ export const playfairCipher = (message: string, key: string): string => {
     const [row2, col2] = findPosition(matrix, char2);
 
     if (row1 === row2) {
-      // Aynı satır - sağa kaydır
       result += matrix[row1][(col1 + 1) % 5];
       result += matrix[row2][(col2 + 1) % 5];
     } else if (col1 === col2) {
-      // Aynı sütun - aşağı kaydır
       result += matrix[(row1 + 1) % 5][col1];
       result += matrix[(row2 + 1) % 5][col2];
     } else {
-      // Dikdörtgen
       result += matrix[row1][col2];
       result += matrix[row2][col1];
     }
@@ -122,15 +113,12 @@ export const playfairDecipher = (message: string, key: string): string => {
     const [row2, col2] = findPosition(matrix, char2);
 
     if (row1 === row2) {
-      // Aynı satır - sola kaydır
       result += matrix[row1][(col1 - 1 + 5) % 5];
       result += matrix[row2][(col2 - 1 + 5) % 5];
     } else if (col1 === col2) {
-      // Aynı sütun - yukarı kaydır
       result += matrix[(row1 - 1 + 5) % 5][col1];
       result += matrix[(row2 - 1 + 5) % 5][col2];
     } else {
-      // Dikdörtgen
       result += matrix[row1][col2];
       result += matrix[row2][col1];
     }

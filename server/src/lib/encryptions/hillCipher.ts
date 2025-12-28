@@ -1,4 +1,3 @@
-// Türkçe karakterleri İngilizce karşılıklarına çevir
 const normalizeChar = (char: string): string => {
   const turkishChars = "çÇğĞıİöÖşŞüÜ";
   const englishChars = "cCgGiIoOsSuU";
@@ -6,9 +5,7 @@ const normalizeChar = (char: string): string => {
   return index !== -1 ? englishChars[index] : char;
 };
 
-// Basitleştirilmiş Hill Cipher (2x2 matris)
 export const hillCipher = (message: string, key: string): string => {
-  // Key formatı: "a,b,c,d" (2x2 matris elemanları)
   const keyParts = key.split(",").map(Number);
   if (keyParts.length !== 4) {
     throw new Error("Hill cipher key must have 4 numbers (2x2 matrix)");
@@ -22,7 +19,6 @@ export const hillCipher = (message: string, key: string): string => {
     .filter((ch) => /[A-Z]/.test(ch))
     .join("");
 
-  // Çift uzunlukta olmalı
   const paddedMessage =
     cleanMessage.length % 2 === 0 ? cleanMessage : cleanMessage + "X";
 
@@ -42,7 +38,6 @@ export const hillCipher = (message: string, key: string): string => {
   return result;
 };
 
-// Modüler çarpımsal ters bulma
 const modInverse = (a: number, m: number): number => {
   for (let x = 1; x < m; x++) {
     if ((a * x) % m === 1) {
@@ -60,11 +55,9 @@ export const hillDecipher = (message: string, key: string): string => {
 
   const [a, b, c, d] = keyParts;
 
-  // Determinant hesapla
   const det = (a * d - b * c) % 26;
   const detInv = modInverse((det + 26) % 26, 26);
 
-  // Ters matris elemanları
   const invA = ((d * detInv) % 26 + 26) % 26;
   const invB = ((-b * detInv) % 26 + 26) % 26;
   const invC = ((-c * detInv) % 26 + 26) % 26;

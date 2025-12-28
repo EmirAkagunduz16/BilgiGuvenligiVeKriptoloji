@@ -1,4 +1,3 @@
-// RSA ve Hibrit Şifreleme Modülü
 export {
   generateRSAKeyPair,
   getServerKeyPair,

@@ -1,6 +1,5 @@
 import { lowercaseAlphabet, uppercaseAlphabet } from "../constants/alphabet";
 
-// Türkçe karakterleri İngilizce karşılıklarına çevir
 const normalizeChar = (char: string): string => {
   const turkishChars = "çÇğĞıİöÖşŞüÜ";
   const englishChars = "cCgGiIoOsSuU";
@@ -11,13 +10,11 @@ const normalizeChar = (char: string): string => {
 export const caeserCipher = (message: string, key: number): string => {
   let result = "";
 
-  // JavaScript modulo bug fix: Negatif sayılar için doğru mod alma
   const safeMod = (n: number, m: number) => ((n % m) + m) % m;
 
   for (let i = 0; i < message.length; i++) {
     let char = message[i];
     
-    // Türkçe karakteri normalize et
     char = normalizeChar(char);
 
     if (uppercaseAlphabet.includes(char)) {
@@ -29,7 +26,6 @@ export const caeserCipher = (message: string, key: number): string => {
       const newIndex = safeMod(index + key, 26);
       result += lowercaseAlphabet[newIndex];
     } else {
-      // Harf değilse (boşluk, noktalama vb.)
       result += char;
     }
   }
@@ -38,6 +34,5 @@ export const caeserCipher = (message: string, key: number): string => {
 };
 
 export const caeserDecipher = (message: string, key: number): string => {
-  // Deşifreleme için negatif kaydırma kullan
   return caeserCipher(message, -key);
 };

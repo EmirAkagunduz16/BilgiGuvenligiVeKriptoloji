@@ -1,4 +1,3 @@
-// Türkçe karakterleri İngilizce karşılıklarına çevir
 const normalizeChar = (char: string): string => {
   const turkishChars = "çÇğĞıİöÖşŞüÜ";
   const englishChars = "cCgGiIoOsSuU";
@@ -7,7 +6,6 @@ const normalizeChar = (char: string): string => {
 };
 
 export const polybiusCipher = (message: string, key: string): string => {
-  // 5x5 Polybius square (I/J birleşik)
   const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
   
   let result = "";
@@ -24,7 +22,7 @@ export const polybiusCipher = (message: string, key: string): string => {
       const col = (index % 5) + 1;
       result += `${row}${col}`;
     } else {
-      result += char; // Sayı veya özel karakter
+      result += char;
     }
   }
   
