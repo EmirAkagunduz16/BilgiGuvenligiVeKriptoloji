@@ -1,3 +1,4 @@
+// İlk karıştırma
 const IP: number[] = [
   58, 50, 42, 34, 26, 18, 10, 2,
   60, 52, 44, 36, 28, 20, 12, 4,
@@ -9,6 +10,7 @@ const IP: number[] = [
   63, 55, 47, 39, 31, 23, 15, 7,
 ];
 
+// Son karıştırma (IP'nin tersi)
 const FP: number[] = [
   40, 8, 48, 16, 56, 24, 64, 32,
   39, 7, 47, 15, 55, 23, 63, 31,
@@ -20,6 +22,7 @@ const FP: number[] = [
   33, 1, 41, 9, 49, 17, 57, 25,
 ];
 
+// Expand fonksiyonu için permütasyon
 const E: number[] = [
   32, 1, 2, 3, 4, 5,
   4, 5, 6, 7, 8, 9,
@@ -31,6 +34,7 @@ const E: number[] = [
   28, 29, 30, 31, 32, 1,
 ];
 
+// Feistel fonksiyonu sonrası permütasyon
 const P: number[] = [
   16, 7, 20, 21, 29, 12, 28, 17,
   1, 15, 23, 26, 5, 18, 31, 10,
@@ -89,6 +93,7 @@ const S_BOXES: number[][][] = [
   ],
 ];
 
+// Permütasyon 1 (PC1) - 64 bit -> 56 bit
 const PC1: number[] = [
   57, 49, 41, 33, 25, 17, 9,
   1, 58, 50, 42, 34, 26, 18,
@@ -100,6 +105,7 @@ const PC1: number[] = [
   21, 13, 5, 28, 20, 12, 4,
 ];
 
+// Permütasyon 2 (PC2) - 56 bit -> 48 bit
 const PC2: number[] = [
   14, 17, 11, 24, 1, 5,
   3, 28, 15, 6, 21, 10,
@@ -111,6 +117,7 @@ const PC2: number[] = [
   46, 42, 50, 36, 29, 32,
 ];
 
+// Her round için left shift sayısı
 const SHIFTS: number[] = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
 
 const stringToBits = (str: string): number[] => {
